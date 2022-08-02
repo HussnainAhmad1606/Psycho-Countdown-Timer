@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 from tkinter.messagebox import showinfo, showwarning
 import webbrowser
 
@@ -27,8 +28,73 @@ isTimeStarted = False
 # Available fonts on GUI
 fonts = ["Book Antiqua", "Stencil", "Rockwell", "Poppins", "New Athletic M54", "Molot", "Georgia", "Century Gothic"]
 
+# Variable to store the id of function that will change the timer after each second
 loopFunction = None
 
+# Current Theme Selected
+currentTheme = StringVar()
+currentTheme.set("Default")
+themeId = IntVar()
+
+# Changing theme function
+def changeTheme():
+	global currentTheme
+	if themeId.get() == 1:
+		selectedTheme = "Default"
+	elif themeId.get() == 2:
+		selectedTheme = "Dark/Blue"
+	elif themeId.get() == 3:
+		selectedTheme = "Dark/Red"
+	elif themeId.get() == 4:
+		selectedTheme = "Pink"
+
+	currentTheme.set(selectedTheme)
+	showinfo("Theme", f"Your Selection: {selectedTheme}")
+
+	applyTheme(currentTheme.get())
+
+bgColor = ""
+fgColor = ""
+buttonBg = ""
+buttonFg = ""
+def applyTheme(theme):
+	global bgColor, fgColor, buttonBg, buttonFg
+	if theme == "Dark/Blue":
+		bgColor = "#121212"
+		fgColor = "#1E90FF"
+		buttonBg = "#1E90FF"
+		buttonFg = "white"
+		secondaryColor = "white"
+	elif theme == "Default":
+		bgColor = "#f0f0f0"
+		fgColor = "black"
+		buttonBg = "#f0f0f0"
+		buttonFg = "black"
+	elif theme == "Dark/Red":
+		bgColor = "#2b303a"
+		fgColor = "#d64933"
+		buttonBg = "#d64933"
+		buttonFg = "white"
+	elif theme == "Pink":
+		bgColor = "#C65B7C"
+		fgColor = "#F9627D"
+		buttonBg = "#F9627D"
+		buttonFg = "black"
+	root.configure(background=bgColor)
+	buttonsFrame.configure(background=bgColor)
+	watchFrame.configure(bg=bgColor)
+	hoursLabel.configure(background=bgColor, fg=fgColor)
+	colon1.configure(background=bgColor, fg=fgColor)
+	minutesLabel.configure(background=bgColor, fg=fgColor)
+	colon2.configure(background=bgColor, fg=fgColor)
+	secondsLabel.configure(background=bgColor, fg=fgColor)
+	setTimerBtn.configure(background=buttonBg, fg=buttonFg)
+	startTimerBtn.configure(background=buttonBg, fg=buttonFg)
+	stopTimerBtn.configure(background=buttonBg, fg=buttonFg)
+	resetTimerBtn.configure(background=buttonBg, fg=buttonFg)
+
+
+        
 
 # Function to add 0 to the left of hours, minutes & seconds
 def addZero(value):
@@ -179,6 +245,7 @@ seconds.set("05")
 
 # Main Window
 watchFrame = Frame(root)
+
 hoursLabel = Label(watchFrame, textvariable=hours, font=(fontName.get(),fontSize.get()))
 hoursLabel.pack(side=LEFT)
 colon1 = Label(watchFrame, text=":", font=(fontName.get(), fontSize.get()))
@@ -212,16 +279,21 @@ buttonsFrame.pack()
 mainMenu = Menu(root)
 
 preferencesMenu = Menu(root, tearoff=0)
-preferencesMenu.add_command(label="Fonts", command=changeFont)
-
+preferencesMenu.add_command(label="Fonts", command=changeFont, underline=0)
+themesMenu = Menu(preferencesMenu, tearoff=0)
+themesMenu.add_radiobutton(label="Default", command=changeTheme, variable=themeId, value=1)
+themesMenu.add_radiobutton(label="Dark/Blue", command=changeTheme, value=2, variable=themeId)
+themesMenu.add_radiobutton(label="Dark/Red", command=changeTheme, value=3, variable=themeId)
+themesMenu.add_radiobutton(label="Pink", command=changeTheme, value=4, variable=themeId)
+preferencesMenu.add_cascade(label="Themes", menu=themesMenu)
 mainMenu.add_cascade(label="Preferences", menu=preferencesMenu)
 aboutMenu = Menu(mainMenu, tearoff=0)
 aboutMenu.add_command(label="Quit", command=root.destroy)
 aboutMenu.add_separator()
-aboutMenu.add_command(label="About Software", command=aboutSoftware)
-aboutMenu.add_separator()
 aboutMenu.add_command(label="Visit Website", command=visitWebsite)
+aboutMenu.add_command(label="About Software", command=aboutSoftware)
 mainMenu.add_cascade(label="About", menu=aboutMenu)
 
 root.config(menu=mainMenu)
+
 root.mainloop()
